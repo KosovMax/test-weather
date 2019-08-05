@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+	        <div class="col-xs-12 col-sm-12 col-md-12">
+	        	<div class="btn-group clickCity" role="group" aria-label="" >
+				  <button type="button" class="btn btn-link" data-q="Kyiv,ua">Kyiv</button>
+				  <button type="button" class="btn btn-link" data-q="Chernihiv,ua">Chernihiv</button>
+				  <button type="button" class="btn btn-link" data-q="Odessa,ua">Odessa</button>
+				  <button type="button" class="btn btn-link" data-q="Berlin,de">Berlin </button>
+				  <button type="button" class="btn btn-link" data-q="Warsaw,pl">Warsaw </button>
+				  <button type="button" class="btn btn-link" data-q="Sofia,bl">Sofia (Bulgaria)</button>
+				</div>
+				<div id="error" style="color: red;"></div>
+	        </div>
+	       	<div class="col-xs-12 col-sm-12 col-md-12">
+	       		<table class="table">
+				  <tbody>
+				    <tr>
+				      <th scope="row">City</th>
+				      <td class="doneWeather" data-done="name" data-with-name="">-</td>
+				    </tr>
+				    <tr>
+				      <th scope="row">Temperature</th>
+				      <td class="doneWeather" data-done="main.temp" data-with-name="°C">-</td>
+				    </tr>
+
+				    <tr>
+				      <th scope="row">Atmospheric pressure</th>
+				      <td class="doneWeather" data-done="main.pressure" data-with-name="hPa">-</td>
+				    </tr>
+				    <tr>
+				      <th scope="row">Humidity</th>
+				      <td class="doneWeather" data-done="main.humidity" data-with-name="%">-</td>
+				    </tr>
+				    <tr>
+				      <th scope="row">Wind speed</th>
+				      <td class="doneWeather" data-done="wind.speed" data-with-name="meter/sec">-</td>
+				    </tr>
+				     <tr>
+				      <th scope="row">Wind deg</th>
+				      <td class="doneWeather" data-done="wind.deg" data-with-name="°">-</td>
+				    </tr>
+
+				  </tbody>
+				</table>
+			</div>
+	    </div>
+	</div>
+
+	<iframe style="display: none;"></iframe>
+
+
+
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+			$('.clickCity .btn').click(function(){
+
+				var q = $(this).attr('data-q');
+
+				var data = {};
+				data['appid'] = 'c2dcf8ffb5cdc3f8977bfd2ae7ea4738';
+				data['units'] = 'metric';
+				data['q'] = q
+
+				$.ajax({
+					type:'GET',
+					url:'https://api.openweathermap.org/data/2.5/weather',
+					data:data,
+					data
+				}).done(function(data){
+
+					$('#error').text('');
+
+					$('.doneWeather').each(function(){
+						var datas = $(this).attr('data-done').split('.');
+						var withName = $(this).attr('data-with-name');
+
+						if(datas.length == 1){
+							$(this).text(data[datas[0]] +' '+ withName)
+						}else if(datas.length == 2){
+							$(this).text(data[datas[0]][datas[1]] +' '+ withName);
+						}
+
+
+					});
+
+				}).fail(function(jqXHR, textStatus){
+					console.log(jqXHR, textStatus);
+
+					var json = JSON.parse(jqXHR.responseText)
+
+					$('.doneWeather').text('-');
+					$('#error').text(json.message);
+
+				});
+
+			});
+		});
+		
+	</script>
+
+</body>
+</html>
